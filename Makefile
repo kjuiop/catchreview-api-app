@@ -1,5 +1,3 @@
-include .env
-
 PROJECT_PATH=$(shell pwd)
 MODULE_NAME=cr-api
 
@@ -7,6 +5,7 @@ BUILD_NUM_FILE=build_num.txt
 BUILD_NUM=$$(cat ./deploy/build_num.txt)
 APP_VERSION=$$(cat ./deploy/version.txt)
 TARGET_VERSION=$(APP_VERSION).$(BUILD_NUM)
+IMAGE_REPOSITORY="public.ecr.aws/v8a1b7r1/catchreview"
 
 TARGET_DIR=bin
 OUTPUT=$(PROJECT_PATH)/$(TARGET_DIR)/$(MODULE_NAME)
@@ -24,12 +23,20 @@ build:
 	CGO_ENABLED=0 GOOS=linux go build -ldflags "$(LDFLAGS)" -o $(OUTPUT) $(PROJECT_PATH)$(MAIN_DIR)
 
 docker-build:
-	@echo "TARGET_VERSION : $(TARGET_VERSION), DOCKER_REPOSITORY : $(IMAGE_REPOSITORY)"
+	@echo "TARGET_VERSION : $(TARGET_VERSION)"
 	docker build -f Dockerfile --tag $(IMAGE_REPOSITORY):$(TARGET_VERSION) .
 
 docker-push:
 	@echo "TARGET_VERSION : $(TARGET_VERSION)"
 	docker push $(IMAGE_REPOSITORY):$(TARGET_VERSION)
+
+docker-release:
+	@echo "TARGET_VERSION : $(TARGET_VERSION)"
+	docker build -f Dockerfile --tag $(IMAGE_REPOSITORY):latest .
+	docker push $(IMAGE_REPOSITORY):latest
+
+ecr-access:
+	bash -c ./deploy/ecr/ecr_access.sh
 
 target-version:
 	@echo "========================================"
@@ -40,9 +47,6 @@ target-version:
 
 build-num:
 	@echo $$(($$(cat $(BUILD_NUM_FILE)) + 1 )) > $(BUILD_NUM_FILE)
-
-ecr-access:
-	bash -c ./deploy/ecr/ecr_access.sh
 
 clean:
 	rm -f $(PROJECT_PATH)/$(TARGET_DIR)/$(MODULE_NAME)*
