@@ -6,7 +6,9 @@ import (
 )
 
 type Config struct {
-	ApiPort string `envconfig:"API_PORT" default:"8088"`
+	ApiPort     string `envconfig:"API_PORT" default:"8088"`
+	ApiLogPath  string `envconfig:"API_LOG_PATH"`
+	ApiLogLevel string `envconfig:"API_LOG_LEVEL" default:"debug"`
 }
 
 func ConfInitialize() (*Config, error) {

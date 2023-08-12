@@ -8,3 +8,4 @@ catchreview-api-app
 
 # env
 .env
+deploy/ecr/

@@ -15,7 +15,7 @@ LDFLAGS=-X main.BUILD_TIME=`date -u '+%Y-%m-%d_%H:%M:%S'`
 LDFLAGS+=-X main.GIT_HASH=`git rev-parse HEAD`
 LDFLAGS+=-s -w
 
-all: config docker-build
+all: config docker-build docker-push
 
 config:
 	@if [ ! -d $(TARGET_DIR) ]; then mkdir $(TARGET_DIR); fi
@@ -40,6 +40,9 @@ target-version:
 
 build-num:
 	@echo $$(($$(cat $(BUILD_NUM_FILE)) + 1 )) > $(BUILD_NUM_FILE)
+
+ecr-access:
+	bash -c ./deploy/ecr/ecr_access.sh
 
 clean:
 	rm -f $(PROJECT_PATH)/$(TARGET_DIR)/$(MODULE_NAME)*
