@@ -4,8 +4,8 @@ PROJECT_PATH=$(shell pwd)
 MODULE_NAME=cr-api
 
 BUILD_NUM_FILE=build_num.txt
-BUILD_NUM=$$(cat ./build_num.txt)
-APP_VERSION=$$(cat ./version.txt)
+BUILD_NUM=$$(cat ./deploy/build_num.txt)
+APP_VERSION=$$(cat ./deploy/version.txt)
 TARGET_VERSION=$(APP_VERSION).$(BUILD_NUM)
 
 TARGET_DIR=bin
