@@ -5,6 +5,7 @@ BUILD_NUM_FILE=build_num.txt
 BUILD_NUM=$$(cat ./build_num.txt)
 APP_VERSION=$$(cat ./version.txt)
 TARGET_VERSION=$(APP_VERSION).$(BUILD_NUM)
+IMAGE_REPOSITORY="public.ecr.aws/v8a1b7r1/catchreview/cr-api"
 
 TARGET_DIR=bin
 OUTPUT=$(PROJECT_PATH)/$(TARGET_DIR)/$(MODULE_NAME)
@@ -13,13 +14,26 @@ LDFLAGS=-X main.BUILD_TIME=`date -u '+%Y-%m-%d_%H:%M:%S'`
 LDFLAGS+=-X main.GIT_HASH=`git rev-parse HEAD`
 LDFLAGS+=-s -w
 
-all: config
+all: config docker-build
 
 config:
 	@if [ ! -d $(TARGET_DIR) ]; then mkdir $(TARGET_DIR); fi
 
 build:
 	CGO_ENABLED=0 GOOS=linux go build -ldflags "$(LDFLAGS)" -o $(OUTPUT) $(PROJECT_PATH)$(MAIN_DIR)
+
+docker-build:
+	@echo "TARGET_VERSION : $(TARGET_VERSION)"
+	docker build -f Dockerfile --tag $(IMAGE_REPOSITORY):$(TARGET_VERSION) .
+
+docker-push:
+	@echo "TARGET_VERSION : $(TARGET_VERSION)"
+	docker push $(IMAGE_REPOSITORY):$(TARGET_VERSION)
+
+docker-release:
+	@echo "TARGET_VERSION : $(TARGET_VERSION)"
+	docker build -f Dockerfile --tag $(IMAGE_REPOSITORY):latest .
+	docker push $(IMAGE_REPOSITORY):latest
 
 target-version:
 	@echo "========================================"
