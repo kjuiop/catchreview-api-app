@@ -4,3 +4,4 @@ catchreview-api-app.iml
 
 # bin
 bin
+deploy/ecr

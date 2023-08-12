@@ -5,7 +5,7 @@ BUILD_NUM_FILE=build_num.txt
 BUILD_NUM=$$(cat ./deploy/build_num.txt)
 APP_VERSION=$$(cat ./deploy/version.txt)
 TARGET_VERSION=$(APP_VERSION).$(BUILD_NUM)
-IMAGE_REPOSITORY="public.ecr.aws/v8a1b7r1/catchreview/cr-api"
+IMAGE_REPOSITORY="public.ecr.aws/v8a1b7r1/catchreview"
 
 TARGET_DIR=bin
 OUTPUT=$(PROJECT_PATH)/$(TARGET_DIR)/$(MODULE_NAME)
@@ -14,7 +14,7 @@ LDFLAGS=-X main.BUILD_TIME=`date -u '+%Y-%m-%d_%H:%M:%S'`
 LDFLAGS+=-X main.GIT_HASH=`git rev-parse HEAD`
 LDFLAGS+=-s -w
 
-all: config docker-build
+all: config docker-build docker-push
 
 config:
 	@if [ ! -d $(TARGET_DIR) ]; then mkdir $(TARGET_DIR); fi
@@ -34,6 +34,9 @@ docker-release:
 	@echo "TARGET_VERSION : $(TARGET_VERSION)"
 	docker build -f Dockerfile --tag $(IMAGE_REPOSITORY):latest .
 	docker push $(IMAGE_REPOSITORY):latest
+
+ecr-access:
+	bash -c ./deploy/ecr/ecr_access.sh
 
 target-version:
 	@echo "========================================"
