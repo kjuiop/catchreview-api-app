@@ -3,6 +3,7 @@ package main
 import (
 	"catchreview-api-app/config"
 	"catchreview-api-app/internal/delivery/http/handler"
+	"catchreview-api-app/internal/repository/mysql"
 	"catchreview-api-app/internal/usecase"
 	"context"
 	"fmt"
@@ -36,7 +37,9 @@ func main() {
 	group := router.Group("/api")
 
 	handler.NewApiHandler(cfg, group)
-	mus := usecase.NewMemberUsecase()
+
+	mur := mysql.NewMysqlMemberRepository(nil)
+	mus := usecase.NewMemberUsecase(mur)
 	handler.NewMemberHandler(group, mus)
 
 	srv := &http.Server{

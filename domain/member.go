@@ -18,3 +18,7 @@ type Member struct {
 type MemberUsecase interface {
 	Store(context.Context, *Member)
 }
+
+type MemberRepository interface {
+	Store(ctx context.Context, m *Member)
+}
