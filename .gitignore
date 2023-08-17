@@ -6,5 +6,6 @@ catchreview-api-app.iml
 bin
 catchreview-api-app
 
-# env
+# etc
 .env
+coverage.out
