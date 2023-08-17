@@ -2,7 +2,7 @@ package main
 
 import (
 	"catchreview-api-app/config"
-	"catchreview-api-app/handler"
+	http2 "catchreview-api-app/internal/delivery/http"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -29,7 +29,7 @@ func main() {
 		return
 	}
 
-	a := handler.NewApiHandler(cfg)
+	a := http2.NewApiHandler(cfg)
 
 	router := gin.Default()
 	router.GET("/api/health-check", a.HealthCheck)
