@@ -12,13 +12,13 @@ import (
 func TestApiHandler_HealthCheck(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
+	group := router.Group("/api")
 
 	cfg := &config.Config{}
-	handler := NewApiHandler(cfg)
-	router.GET("/health", handler.HealthCheck)
+	NewApiHandler(cfg, group)
 
 	// 테스트용 HTTP 요청 생성
-	req := httptest.NewRequest("GET", "/health", nil)
+	req := httptest.NewRequest("GET", "/api/health-check", nil)
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
