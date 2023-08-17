@@ -3,6 +3,7 @@ package main
 import (
 	"catchreview-api-app/config"
 	"catchreview-api-app/internal/delivery/http/handler"
+	"catchreview-api-app/internal/usecase"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -32,9 +33,13 @@ func main() {
 	}
 
 	h := handler.NewApiHandler(cfg)
+	mus := usecase.NewMemberUsecase()
+	mh := handler.NewMemberHandler(mus)
 
 	router := gin.Default()
-	router.GET("/api/health-check", h.HealthCheck)
+	group := router.Group("/api")
+	setupRouterGroup(group, h)
+	setupMemberGroup(group, mh)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.ApiPort),
@@ -48,6 +53,14 @@ func main() {
 	go serveHttpServer(ctx, srv, &wg)
 
 	wg.Wait()
+}
+
+func setupRouterGroup(group *gin.RouterGroup, h *handler.ApiHandler) {
+	group.GET("/health-check", h.HealthCheck)
+}
+
+func setupMemberGroup(group *gin.RouterGroup, h *handler.MemberHandler) {
+	group.POST("/members", h.Store)
 }
 
 func closeWithContext(ctx context.Context, cancel context.CancelFunc, srv *http.Server, quit chan os.Signal, wg *sync.WaitGroup) {

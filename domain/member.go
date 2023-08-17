@@ -16,5 +16,5 @@ type Member struct {
 }
 
 type MemberUsecase interface {
-	Store(context.Context, *Member) error
+	Store(context.Context, *Member)
 }
