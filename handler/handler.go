@@ -12,16 +12,12 @@ import (
 )
 
 type ApiHandler struct {
-	ctx       context.Context
-	ctxCancel context.CancelFunc
-	cfg       *config.Config
+	cfg *config.Config
 }
 
-func NewApiHandler(cfg *config.Config, ctx context.Context, cancel context.CancelFunc) *ApiHandler {
+func NewApiHandler(cfg *config.Config) *ApiHandler {
 	return &ApiHandler{
-		cfg:       cfg,
-		ctx:       ctx,
-		ctxCancel: cancel,
+		cfg: cfg,
 	}
 }
 
@@ -29,7 +25,7 @@ func (a *ApiHandler) HealthCheck(gCtx *gin.Context) {
 	gCtx.JSON(http.StatusOK, map[string]string{"result": "success"})
 }
 
-func (a *ApiHandler) ServeHttpServer(srv *http.Server, wg *sync.WaitGroup) {
+func (a *ApiHandler) ServeHttpServer(ctx context.Context, srv *http.Server, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	log.Println("ServeHttpServer in")
@@ -39,19 +35,18 @@ func (a *ApiHandler) ServeHttpServer(srv *http.Server, wg *sync.WaitGroup) {
 	}
 }
 
-func (a *ApiHandler) CloseWithContext(srv *http.Server, quit chan os.Signal, wg *sync.WaitGroup) {
-
+func (a *ApiHandler) CloseWithContext(ctx context.Context, cancel context.CancelFunc, srv *http.Server, quit chan os.Signal, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for {
 		select {
 		case <-quit:
 			log.Printf("Received exit signal: %v\n", quit)
-			a.ctxCancel()
-		case <-a.ctx.Done():
+			cancel()
+		case <-ctx.Done():
 			log.Println("Context done, initiating graceful shutdown...")
 
-			if err := srv.Shutdown(a.ctx); err != nil {
+			if err := srv.Shutdown(ctx); err != nil {
 				log.Println("Server shutdown error:", err)
 				return
 			}
