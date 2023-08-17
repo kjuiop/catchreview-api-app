@@ -21,7 +21,7 @@ func TestApiHandler_CloseWithContext(t *testing.T) {
 
 	cfg := &config.Config{ApiPort: "8080"}
 	ctx, cancel := context.WithCancel(context.Background())
-	handler := NewApiHandler(cfg, ctx, cancel)
+	handler := NewApiHandler(cfg)
 
 	server := &http.Server{
 		Addr:    ":" + cfg.ApiPort,
@@ -30,7 +30,7 @@ func TestApiHandler_CloseWithContext(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-	go handler.ServeHttpServer(server, &wg)
+	go handler.ServeHttpServer(ctx, server, &wg)
 
 	// 테스트: 핸들러의 CloseWithContext 호출
 	quit := make(chan os.Signal, 1)
@@ -43,7 +43,7 @@ func TestApiHandler_CloseWithContext(t *testing.T) {
 	}()
 
 	wg.Add(1)
-	go handler.CloseWithContext(server, quit, &wg)
+	go handler.CloseWithContext(ctx, cancel, server, quit, &wg)
 
 	wg.Wait() // 모든 고루틴이 종료될 때까지 대기
 
