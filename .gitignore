@@ -1,2 +1,9 @@
+# idea
 .idea
 catchreview-api-app.iml
+
+# bin
+bin
+
+# env
+.env
