@@ -75,11 +75,12 @@ func TestApiHandler_ServeHttpServer(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
+	group := router.Group("/api")
 
 	cfg := &config.Config{ApiPort: "8098"}
 	ctx, cancel := context.WithCancel(context.Background())
-	h := handler.NewApiHandler(cfg)
-	router.GET("/health", h.HealthCheck)
+
+	handler.NewApiHandler(cfg, group)
 
 	server := &http.Server{
 		Addr:    ":" + cfg.ApiPort,
@@ -92,7 +93,7 @@ func TestApiHandler_ServeHttpServer(t *testing.T) {
 
 	// 테스트용 HTTP 클라이언트 생성
 	client := http.Client{}
-	req, _ := http.NewRequest("GET", "http://localhost:"+cfg.ApiPort+"/health", nil)
+	req, _ := http.NewRequest("GET", "http://localhost:"+cfg.ApiPort+"/api/health-check", nil)
 	resp, err := client.Do(req)
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
