@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"time"
 
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
-	"time"
 )
 
 func main() {
@@ -32,14 +32,12 @@ func main() {
 		return
 	}
 
-	h := handler.NewApiHandler(cfg)
-	mus := usecase.NewMemberUsecase()
-	mh := handler.NewMemberHandler(mus)
-
 	router := gin.Default()
 	group := router.Group("/api")
-	setupRouterGroup(group, h)
-	setupMemberGroup(group, mh)
+
+	handler.NewApiHandler(cfg, group)
+	mus := usecase.NewMemberUsecase()
+	handler.NewMemberHandler(group, mus)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.ApiPort),
@@ -53,14 +51,6 @@ func main() {
 	go serveHttpServer(ctx, srv, &wg)
 
 	wg.Wait()
-}
-
-func setupRouterGroup(group *gin.RouterGroup, h *handler.ApiHandler) {
-	group.GET("/health-check", h.HealthCheck)
-}
-
-func setupMemberGroup(group *gin.RouterGroup, h *handler.MemberHandler) {
-	group.POST("/members", h.Store)
 }
 
 func closeWithContext(ctx context.Context, cancel context.CancelFunc, srv *http.Server, quit chan os.Signal, wg *sync.WaitGroup) {
