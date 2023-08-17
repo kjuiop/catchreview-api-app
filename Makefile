@@ -1,3 +1,5 @@
+include .env
+
 PROJECT_PATH=$(shell pwd)
 MODULE_NAME=cr-api
 
@@ -13,13 +15,21 @@ LDFLAGS=-X main.BUILD_TIME=`date -u '+%Y-%m-%d_%H:%M:%S'`
 LDFLAGS+=-X main.GIT_HASH=`git rev-parse HEAD`
 LDFLAGS+=-s -w
 
-all: config
+all: config docker-build
 
 config:
 	@if [ ! -d $(TARGET_DIR) ]; then mkdir $(TARGET_DIR); fi
 
 build:
 	CGO_ENABLED=0 GOOS=linux go build -ldflags "$(LDFLAGS)" -o $(OUTPUT) $(PROJECT_PATH)$(MAIN_DIR)
+
+docker-build:
+	@echo "TARGET_VERSION : $(TARGET_VERSION), DOCKER_REPOSITORY : $(IMAGE_REPOSITORY)"
+	docker build -f Dockerfile --tag $(IMAGE_REPOSITORY):$(TARGET_VERSION) .
+
+docker-push:
+	@echo "TARGET_VERSION : $(TARGET_VERSION)"
+	docker push $(IMAGE_REPOSITORY):$(TARGET_VERSION)
 
 target-version:
 	@echo "========================================"
