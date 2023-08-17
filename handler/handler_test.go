@@ -40,7 +40,7 @@ func TestApiHandler_CloseWithContext(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
-	cfg := &config.Config{ApiPort: "8080"}
+	cfg := &config.Config{ApiPort: "0"}
 	ctx, cancel := context.WithCancel(context.Background())
 	handler := NewApiHandler(cfg)
 
