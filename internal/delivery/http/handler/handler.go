@@ -10,10 +10,11 @@ type ApiHandler struct {
 	cfg *config.Config
 }
 
-func NewApiHandler(cfg *config.Config) *ApiHandler {
-	return &ApiHandler{
+func NewApiHandler(cfg *config.Config, group *gin.RouterGroup) {
+	handler := &ApiHandler{
 		cfg: cfg,
 	}
+	group.GET("/health-check", handler.HealthCheck)
 }
 
 func (a *ApiHandler) HealthCheck(gCtx *gin.Context) {
