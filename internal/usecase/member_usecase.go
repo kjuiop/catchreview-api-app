@@ -6,10 +6,13 @@ import (
 )
 
 type memberUsecase struct {
+	memberRepo domain.MemberRepository
 }
 
-func NewMemberUsecase() domain.MemberUsecase {
-	return &memberUsecase{}
+func NewMemberUsecase(repo domain.MemberRepository) domain.MemberUsecase {
+	return &memberUsecase{
+		memberRepo: repo,
+	}
 }
 
 func (m memberUsecase) Store(ctx context.Context, member *domain.Member) {
