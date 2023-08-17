@@ -29,7 +29,7 @@ func main() {
 		return
 	}
 
-	a := handler.NewApiHandler(cfg, ctx, cancel)
+	a := handler.NewApiHandler(cfg)
 
 	router := gin.Default()
 	router.GET("/api/health-check", a.HealthCheck)
@@ -40,10 +40,10 @@ func main() {
 	}
 
 	wg.Add(1)
-	go a.CloseWithContext(srv, quit, &wg)
+	go a.CloseWithContext(ctx, cancel, srv, quit, &wg)
 
 	wg.Add(1)
-	go a.ServeHttpServer(srv, &wg)
+	go a.ServeHttpServer(ctx, srv, &wg)
 
 	wg.Wait()
 }
