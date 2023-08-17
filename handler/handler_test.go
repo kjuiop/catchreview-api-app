@@ -40,7 +40,7 @@ func TestApiHandler_ServeHttpServer(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
-	cfg := &config.Config{ApiPort: "8080"}
+	cfg := &config.Config{ApiPort: "8098"}
 	ctx, cancel := context.WithCancel(context.Background())
 	handler := NewApiHandler(cfg)
 	router.GET("/health", handler.HealthCheck)

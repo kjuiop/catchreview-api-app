@@ -6,3 +6,4 @@ catchreview-api-app.iml
 bin
 deploy/ecr
 .env
+coverage.out
