@@ -10,11 +10,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
-	"time"
 )
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	wg := sync.WaitGroup{}
+
+	quit := make(chan os.Signal, 1)
+	defer close(quit)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
 
 	cfg, err := config.ConfInitialize()
 	if err != nil {
@@ -22,7 +29,7 @@ func main() {
 		return
 	}
 
-	a := handler.NewApiHandler(cfg)
+	a := handler.NewApiHandler(cfg, ctx, cancel)
 
 	router := gin.Default()
 	router.GET("/api/health-check", a.HealthCheck)
@@ -32,34 +39,11 @@ func main() {
 		Handler: router,
 	}
 
-	go serveHttpServer(srv)
+	wg.Add(1)
+	go a.CloseWithContext(srv, quit, &wg)
 
-	quit := make(chan os.Signal, 1)
-	defer close(quit)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
+	wg.Add(1)
+	go a.ServeHttpServer(srv, &wg)
 
-	<-quit
-	log.Println("Shutdown Server ...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
-	}
-
-	select {
-	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
-	}
-	log.Println("Server exiting")
+	wg.Wait()
 }
-
-func serveHttpServer(srv *http.Server) {
-
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("listen: %s\n", err)
-		return
-	}
-}
-
