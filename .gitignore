@@ -5,5 +5,8 @@ catchreview-api-app.iml
 # bin
 bin
 deploy/ecr
+catchreview-api-app
+
+# etc
 .env
 coverage.out
