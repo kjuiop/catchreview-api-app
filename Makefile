@@ -3,7 +3,7 @@ include .env
 PROJECT_PATH=$(shell pwd)
 MODULE_NAME=cr-api
 
-BUILD_NUM_FILE=build_num.txt
+BUILD_NUM_FILE=./deploy/build_num.txt
 BUILD_NUM=$$(cat ./deploy/build_num.txt)
 APP_VERSION=$$(cat ./deploy/version.txt)
 TARGET_VERSION=$(APP_VERSION).$(BUILD_NUM)
