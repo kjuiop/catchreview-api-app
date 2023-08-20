@@ -1,3 +1,5 @@
+include .env
+
 PROJECT_PATH=$(shell pwd)
 MODULE_NAME=cr-api
 
@@ -5,7 +7,6 @@ BUILD_NUM_FILE=build_num.txt
 BUILD_NUM=$$(cat ./deploy/build_num.txt)
 APP_VERSION=$$(cat ./deploy/version.txt)
 TARGET_VERSION=$(APP_VERSION).$(BUILD_NUM)
-IMAGE_REPOSITORY="public.ecr.aws/v8a1b7r1/catchreview"
 
 TARGET_DIR=bin
 OUTPUT=$(PROJECT_PATH)/$(TARGET_DIR)/$(MODULE_NAME)
