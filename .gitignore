@@ -4,7 +4,5 @@ catchreview-api-app.iml
 
 # bin
 bin
-catchreview-api-app
-
-# env
+deploy/ecr
 .env
