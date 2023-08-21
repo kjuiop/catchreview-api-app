@@ -23,12 +23,38 @@ func NewMysqlMemberRepository(conn *sql.DB) domain.MemberRepository {
 		return repo
 	}
 
+	if err := repo.createMemberTable(); err != nil {
+		log.Fatalln("createMemberTable err : ", err)
+	}
+
 	return repo
 }
 
 func (repo mysqlMemberRepository) Store(ctx context.Context, m *domain.Member) {
 	//TODO implement me
 	panic("implement me")
+}
+
+func (repo mysqlMemberRepository) createMemberTable() error {
+
+	createTableQuery := `
+		CREATE TABLE IF NOT EXISTS Members (
+			Username VARCHAR(255) PRIMARY KEY,
+			Password VARCHAR(255) NOT NULL,
+			Nickname VARCHAR(255),
+			PrivacyAgreedAt DATETIME,
+			PolicyAgreedAt DATETIME,
+			CreatedAt DATETIME,
+			UpdatedAt DATETIME
+		);
+	`
+
+	_, err := repo.Conn.Exec(createTableQuery)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (repo mysqlMemberRepository) checkExistMemberTable() (bool, error) {
