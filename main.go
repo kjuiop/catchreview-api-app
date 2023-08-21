@@ -33,17 +33,23 @@ func main() {
 		return
 	}
 
+	mysqlClient, err := mysql.NewMysqlClient(cfg)
+	if err != nil {
+		log.Fatalln("[main] failed mysql initialize : ", err)
+	}
+	defer mysqlClient.DbClose()
+
 	router := gin.Default()
 	group := router.Group("/api")
 
 	handler.NewApiHandler(cfg, group)
 
-	mur := mysql.NewMysqlMemberRepository(nil)
+	mur := mysql.NewMysqlMemberRepository(mysqlClient.DbConn)
 	mus := usecase.NewMemberUsecase(mur)
 	handler.NewMemberHandler(group, mus)
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", cfg.ApiPort),
+		Addr:    fmt.Sprintf(":%s", cfg.HttpInfo.Port),
 		Handler: router,
 	}
 
