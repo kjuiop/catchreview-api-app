@@ -23,6 +23,10 @@ config:
 build:
 	CGO_ENABLED=0 GOOS=linux go build -ldflags "$(LDFLAGS)" -o $(OUTPUT) $(PROJECT_PATH)$(MAIN_DIR)
 
+build-copy:
+	CGO_ENABLED=0 GOOS=linux go build -ldflags "$(LDFLAGS)" -o $(OUTPUT) $(PROJECT_PATH)$(MAIN_DIR)
+	cp $(OUTPUT) ./
+
 docker-build:
 	@echo "TARGET_VERSION : $(TARGET_VERSION)"
 	docker build -f Dockerfile --tag $(IMAGE_REPOSITORY):$(TARGET_VERSION) .
