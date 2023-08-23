@@ -15,6 +15,6 @@ func NewMemberUsecase(repo domain.MemberRepository) domain.MemberUsecase {
 	}
 }
 
-func (m memberUsecase) Store(ctx context.Context, member *domain.Member) {
-	panic("implement me")
+func (m memberUsecase) Store(ctx context.Context, member *domain.Member) error {
+	return nil
 }

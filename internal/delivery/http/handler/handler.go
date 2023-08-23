@@ -6,6 +6,10 @@ import (
 	"net/http"
 )
 
+type ResponseError struct {
+	Message string `json:"message"`
+}
+
 type ApiHandler struct {
 	cfg *config.Config
 }

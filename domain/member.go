@@ -16,7 +16,7 @@ type Member struct {
 }
 
 type MemberUsecase interface {
-	Store(context.Context, *Member)
+	Store(context.Context, *Member) error
 }
 
 type MemberRepository interface {
