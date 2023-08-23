@@ -33,6 +33,8 @@ func main() {
 		return
 	}
 
+	timeoutContext := time.Duration(cfg.ConnectionTimeout) * time.Second
+
 	mysqlClient, err := mysql.NewMysqlClient(cfg)
 	if err != nil {
 		log.Fatalln("[main] failed mysql initialize : ", err)
@@ -45,7 +47,7 @@ func main() {
 	handler.NewApiHandler(cfg, group)
 
 	mur := mysql.NewMysqlMemberRepository(mysqlClient.DbConn)
-	mus := usecase.NewMemberUsecase(mur)
+	mus := usecase.NewMemberUsecase(mur, timeoutContext)
 	handler.NewMemberHandler(group, mus)
 
 	srv := &http.Server{

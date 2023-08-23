@@ -6,6 +6,8 @@ import (
 )
 
 type Config struct {
+	ConnectionTimeout int `envconfig:"API_CONNECTION_TIMEOUT" default:"3"`
+
 	HttpInfo struct {
 		Port string `envconfig:"API_PORT" default:"8088"`
 	}

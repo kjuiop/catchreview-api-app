@@ -32,22 +32,38 @@ func NewMysqlMemberRepository(conn *sql.DB) domain.MemberRepository {
 	return repo
 }
 
-func (repo mysqlMemberRepository) Store(ctx context.Context, m *domain.Member) {
-	//TODO implement me
-	panic("implement me")
+func (repo mysqlMemberRepository) Store(ctx context.Context, m *domain.Member) error {
+	query := `INSERT  Member SET username=? , password=? , nickname=?, privacy_agreed_at=?, policy_agreed_at=?, created_at=?, updated_at=?`
+	stmt, err := repo.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	res, err := stmt.ExecContext(ctx, m.Username, m.Password, m.Nickname, m.PrivacyAgreedAt, m.PolicyAgreedAt, m.CreatedAt, m.UpdatedAt)
+	if err != nil {
+		return err
+	}
+
+	lastID, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	m.MemberId = lastID
+	return nil
 }
 
 func (repo mysqlMemberRepository) createMemberTable() error {
 
 	createTableQuery := `
 		CREATE TABLE IF NOT EXISTS Members (
-			Username VARCHAR(255) PRIMARY KEY,
-			Password VARCHAR(255) NOT NULL,
-			Nickname VARCHAR(255),
-			PrivacyAgreedAt DATETIME,
-			PolicyAgreedAt DATETIME,
-			CreatedAt DATETIME,
-			UpdatedAt DATETIME
+			username VARCHAR(255) PRIMARY KEY,
+			password VARCHAR(255) NOT NULL,
+			nickname VARCHAR(255),
+			privacy_agreed_at DATETIME,
+			policy_agreed_at DATETIME,
+			created_at DATETIME,
+			updated_at DATETIME
 		);
 	`
 

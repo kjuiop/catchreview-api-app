@@ -6,6 +6,7 @@ import (
 )
 
 type Member struct {
+	MemberId        int64     `json:"member_id"`
 	Username        string    `json:"username"`
 	Password        string    `json:"password"`
 	Nickname        string    `json:"nickname"`
@@ -20,5 +21,12 @@ type MemberUsecase interface {
 }
 
 type MemberRepository interface {
-	Store(ctx context.Context, m *Member)
+	Store(ctx context.Context, m *Member) error
+}
+
+func (m *Member) SignUpBuild(currentTime time.Time) {
+	m.PrivacyAgreedAt = currentTime
+	m.PolicyAgreedAt = currentTime
+	m.CreatedAt = currentTime
+	m.UpdatedAt = currentTime
 }
