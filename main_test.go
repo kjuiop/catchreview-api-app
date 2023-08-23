@@ -21,14 +21,15 @@ func TestMainFunction(t *testing.T) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
 
-	cfg := &config.Config{ApiPort: "8088"}
+	cfg := &config.Config{}
+	cfg.HttpInfo.Port = "8088"
 
 	go main()
 
 	time.Sleep(time.Second)
 
 	client := http.Client{}
-	req, _ := http.NewRequest("GET", "http://localhost:"+cfg.ApiPort+"/api/health-check", nil)
+	req, _ := http.NewRequest("GET", "http://localhost:"+cfg.HttpInfo.Port+"/api/health-check", nil)
 	resp, err := client.Do(req)
 	assert.NoError(t, err)
 
@@ -44,11 +45,13 @@ func TestApiHandler_CloseWithContext(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
-	cfg := &config.Config{ApiPort: "0"}
+	cfg := &config.Config{}
+	cfg.HttpInfo.Port = "8088"
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	server := &http.Server{
-		Addr:    ":" + cfg.ApiPort,
+		Addr:    ":" + cfg.HttpInfo.Port,
 		Handler: router,
 	}
 
@@ -77,13 +80,14 @@ func TestApiHandler_ServeHttpServer(t *testing.T) {
 	router := gin.New()
 	group := router.Group("/api")
 
-	cfg := &config.Config{ApiPort: "8098"}
+	cfg := &config.Config{}
+	cfg.HttpInfo.Port = "8088"
 	ctx, cancel := context.WithCancel(context.Background())
 
 	handler.NewApiHandler(cfg, group)
 
 	server := &http.Server{
-		Addr:    ":" + cfg.ApiPort,
+		Addr:    ":" + cfg.HttpInfo.Port,
 		Handler: router,
 	}
 
@@ -93,7 +97,7 @@ func TestApiHandler_ServeHttpServer(t *testing.T) {
 
 	// 테스트용 HTTP 클라이언트 생성
 	client := http.Client{}
-	req, _ := http.NewRequest("GET", "http://localhost:"+cfg.ApiPort+"/api/health-check", nil)
+	req, _ := http.NewRequest("GET", "http://localhost:"+cfg.HttpInfo.Port+"/api/health-check", nil)
 	resp, err := client.Do(req)
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
