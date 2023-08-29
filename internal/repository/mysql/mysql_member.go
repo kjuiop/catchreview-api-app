@@ -33,7 +33,7 @@ func NewMysqlMemberRepository(conn *sql.DB) domain.MemberRepository {
 }
 
 func (repo mysqlMemberRepository) Store(ctx context.Context, m *domain.Member) error {
-	query := `INSERT  Member SET username=? , password=? , nickname=?, privacy_agreed_at=?, policy_agreed_at=?, created_at=?, updated_at=?`
+	query := `INSERT  members SET username=? , password=? , nickname=?, privacy_agreed_at=?, policy_agreed_at=?, created_at=?, updated_at=?`
 	stmt, err := repo.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return err
@@ -56,8 +56,9 @@ func (repo mysqlMemberRepository) Store(ctx context.Context, m *domain.Member) e
 func (repo mysqlMemberRepository) createMemberTable() error {
 
 	createTableQuery := `
-		CREATE TABLE IF NOT EXISTS Members (
-			username VARCHAR(255) PRIMARY KEY,
+		CREATE TABLE IF NOT EXISTS members (
+		    member_id INT AUTO_INCREMENT PRIMARY KEY,
+			username VARCHAR(255) NOT NULL,
 			password VARCHAR(255) NOT NULL,
 			nickname VARCHAR(255),
 			privacy_agreed_at DATETIME,
