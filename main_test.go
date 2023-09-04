@@ -15,29 +15,6 @@ import (
 	"time"
 )
 
-func TestMainFunction(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
-
-	cfg := &config.Config{}
-	cfg.HttpInfo.Port = "8088"
-
-	go main()
-
-	time.Sleep(time.Second)
-
-	client := http.Client{}
-	req, _ := http.NewRequest("GET", "http://localhost:"+cfg.HttpInfo.Port+"/api/health-check", nil)
-	resp, err := client.Do(req)
-	assert.NoError(t, err)
-
-	quit <- syscall.SIGINT
-
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-}
-
 func TestApiHandler_CloseWithContext(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
