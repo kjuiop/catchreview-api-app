@@ -3,7 +3,7 @@ include .env
 PROJECT_PATH=$(shell pwd)
 MODULE_NAME=cr-api
 
-BUILD_NUM_FILE=build_num.txt
+BUILD_NUM_FILE=./deploy/build_num.txt
 BUILD_NUM=$$(cat ./deploy/build_num.txt)
 APP_VERSION=$$(cat ./deploy/version.txt)
 TARGET_VERSION=$(APP_VERSION).$(BUILD_NUM)
@@ -23,18 +23,29 @@ config:
 build:
 	CGO_ENABLED=0 GOOS=linux go build -ldflags "$(LDFLAGS)" -o $(OUTPUT) $(PROJECT_PATH)$(MAIN_DIR)
 
+build-copy:
+	CGO_ENABLED=0 GOOS=linux go build -ldflags "$(LDFLAGS)" -o $(OUTPUT) $(PROJECT_PATH)$(MAIN_DIR)
+	cp $(OUTPUT) ./
+
 docker-build:
-	@echo "TARGET_VERSION : $(TARGET_VERSION)"
+	@echo "TARGET_VERSION : $(IMAGE_REPOSITORY):$(TARGET_VERSION)"
 	docker build -f Dockerfile --tag $(IMAGE_REPOSITORY):$(TARGET_VERSION) .
 
 docker-push:
-	@echo "TARGET_VERSION : $(TARGET_VERSION)"
+	@echo "TARGET_VERSION : $(IMAGE_REPOSITORY):$(TARGET_VERSION)"
 	docker push $(IMAGE_REPOSITORY):$(TARGET_VERSION)
 
 docker-release:
-	@echo "TARGET_VERSION : $(TARGET_VERSION)"
+	@echo "TARGET_VERSION : $(IMAGE_REPOSITORY):$(TARGET_VERSION)"
 	docker build -f Dockerfile --tag $(IMAGE_REPOSITORY):latest .
 	docker push $(IMAGE_REPOSITORY):latest
+
+docker-run:
+	@echo "TARGET_VERSION : $(IMAGE_REPOSITORY):$(TARGET_VERSION)"
+	docker run \
+	--name cr-api \
+	-p 8088:8088 \
+	-it --rm $(IMAGE_REPOSITORY):$(TARGET_VERSION)
 
 ecr-access:
 	bash -c ./deploy/ecr/ecr_access.sh
@@ -43,7 +54,7 @@ target-version:
 	@echo "========================================"
 	@echo "APP_VERSION    : $(APP_VERSION)"
 	@echo "BUILD_NUM      : $(BUILD_NUM)"
-	@echo "TARGET_VERSION : $(TARGET_VERSION)"
+	@echo "TARGET_VERSION : $(IMAGE_REPOSITORY):$(TARGET_VERSION)"
 	@echo "========================================"
 
 build-num:
