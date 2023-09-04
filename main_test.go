@@ -35,8 +35,6 @@ func TestMainFunction(t *testing.T) {
 
 	quit <- syscall.SIGINT
 
-	time.Sleep(time.Second)
-
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
