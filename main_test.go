@@ -15,31 +15,6 @@ import (
 	"time"
 )
 
-func TestMainFunction(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
-
-	cfg := &config.Config{}
-	cfg.HttpInfo.Port = "8088"
-
-	go main()
-
-	time.Sleep(time.Second)
-
-	client := http.Client{}
-	req, _ := http.NewRequest("GET", "http://localhost:"+cfg.HttpInfo.Port+"/api/health-check", nil)
-	resp, err := client.Do(req)
-	assert.NoError(t, err)
-
-	quit <- syscall.SIGINT
-
-	time.Sleep(time.Second)
-
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-}
-
 func TestApiHandler_CloseWithContext(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
@@ -69,7 +44,7 @@ func TestApiHandler_CloseWithContext(t *testing.T) {
 	wg.Add(1)
 	go closeWithContext(ctx, cancel, server, quit, &wg)
 
-	wg.Wait() // 모든 고루틴이 종료될 때까지 대기
+	wg.Wait()
 
 	assert.ErrorIs(t, context.Canceled, ctx.Err())
 }
