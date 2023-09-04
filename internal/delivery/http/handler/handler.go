@@ -2,21 +2,23 @@ package handler
 
 import (
 	"catchreview-api-app/config"
-	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type ApiHandler struct {
-	ctx       context.Context
-	ctxCancel context.CancelFunc
-	cfg       *config.Config
+type ResponseError struct {
+	Message string `json:"message"`
 }
 
-func NewApiHandler(cfg *config.Config) *ApiHandler {
-	return &ApiHandler{
+type ApiHandler struct {
+	cfg *config.Config
+}
+
+func NewApiHandler(cfg *config.Config, group *gin.RouterGroup) {
+	handler := &ApiHandler{
 		cfg: cfg,
 	}
+	group.GET("/health-check", handler.HealthCheck)
 }
 
 func (a *ApiHandler) HealthCheck(gCtx *gin.Context) {

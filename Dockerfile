@@ -6,7 +6,6 @@ COPY . .
 RUN go mod download
 RUN make build
 
-
 FROM alpine
 MAINTAINER jake <arneg0shua@gmail.com>
 
