@@ -10,7 +10,7 @@ func TestConfInitialize(t *testing.T) {
 	config, err := ConfInitialize()
 
 	assert.NoError(t, err)
-	assert.Equal(t, "8088", config.ApiPort)
+	assert.Equal(t, "8088", config.HttpInfo.Port)
 }
 
 func TestConfWithEnv(t *testing.T) {
@@ -20,7 +20,7 @@ func TestConfWithEnv(t *testing.T) {
 	config, err := ConfInitialize()
 	assert.NoError(t, err)
 
-	assert.Equal(t, "9090", config.ApiPort)
+	assert.Equal(t, "9090", config.HttpInfo.Port)
 
 	_ = os.Unsetenv("API_PORT")
 }
