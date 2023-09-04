@@ -67,7 +67,7 @@ func TestApiHandler_CloseWithContext(t *testing.T) {
 	wg.Add(1)
 	go closeWithContext(ctx, cancel, server, quit, &wg)
 
-	wg.Wait() // 모든 고루틴이 종료될 때까지 대기
+	wg.Wait()
 
 	assert.ErrorIs(t, context.Canceled, ctx.Err())
 }
