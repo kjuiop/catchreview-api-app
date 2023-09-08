@@ -63,5 +63,8 @@ build-num:
 swagger-go-path:
 	export PATH=$(go env GOPATH)/bin:$PATH
 
+swagger-set:
+	swag init
+
 clean:
 	rm -f $(PROJECT_PATH)/$(TARGET_DIR)/$(MODULE_NAME)*
