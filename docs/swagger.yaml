@@ -1,0 +1,30 @@
+info:
+  contact:
+    email: arneg0shua@gmail.com
+    name: API Support
+  description: CatchReview Controller API
+  title: CatchReview Controller API
+  version: "1.0"
+paths:
+  /health-check:
+    get:
+      consumes:
+      - application/json
+      description: Api Application Health Check 를 위한 API 입니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid parameters
+        "401":
+          description: Validation authorization
+        "500":
+          description: health check controller internal exception
+      summary: Api Application Health Check
+      tags:
+      - HealthCheck
+swagger: "2.0"

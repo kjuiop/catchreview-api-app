@@ -60,5 +60,8 @@ target-version:
 build-num:
 	@echo $$(($$(cat $(BUILD_NUM_FILE)) + 1 )) > $(BUILD_NUM_FILE)
 
+swagger-go-path:
+	export PATH=$(go env GOPATH)/bin:$PATH
+
 clean:
 	rm -f $(PROJECT_PATH)/$(TARGET_DIR)/$(MODULE_NAME)*

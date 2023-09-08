@@ -2,6 +2,7 @@ package main
 
 import (
 	"catchreview-api-app/config"
+	"catchreview-api-app/docs"
 	"catchreview-api-app/internal/delivery/http/handler"
 	"catchreview-api-app/internal/repository/mysql"
 	"catchreview-api-app/internal/usecase"
@@ -59,7 +60,7 @@ func main() {
 	go closeWithContext(ctx, cancel, srv, quit, &wg)
 
 	wg.Add(1)
-	go serveHttpServer(ctx, srv, &wg)
+	go serveHttpServer(ctx, cfg, srv, &wg)
 
 	wg.Wait()
 }
@@ -87,8 +88,16 @@ func closeWithContext(ctx context.Context, cancel context.CancelFunc, srv *http.
 	}
 }
 
-func serveHttpServer(ctx context.Context, srv *http.Server, wg *sync.WaitGroup) {
+// @title CatchReview Controller API
+// @version 1.0
+// @description CatchReview Controller API
+// @contact.name API Support
+// @contact.email arneg0shua@gmail.com
+func serveHttpServer(ctx context.Context, cfg *config.Config, srv *http.Server, wg *sync.WaitGroup) {
 	defer wg.Done()
+	docs.SwaggerInfo.Schemes = []string{cfg.HttpInfo.Protocol}
+	docs.SwaggerInfo.Host = cfg.SwaggerInfo.BaseHost
+	docs.SwaggerInfo.BasePath = cfg.SwaggerInfo.BasePath
 
 	log.Println("ServeHttpServer in")
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

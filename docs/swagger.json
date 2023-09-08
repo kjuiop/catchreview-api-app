@@ -1,0 +1,46 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "CatchReview Controller API",
+        "title": "CatchReview Controller API",
+        "contact": {
+            "name": "API Support",
+            "email": "arneg0shua@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/health-check": {
+            "get": {
+                "description": "Api Application Health Check 를 위한 API 입니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "HealthCheck"
+                ],
+                "summary": "Api Application Health Check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters"
+                    },
+                    "401": {
+                        "description": "Validation authorization"
+                    },
+                    "500": {
+                        "description": "health check controller internal exception"
+                    }
+                }
+            }
+        }
+    }
+}
